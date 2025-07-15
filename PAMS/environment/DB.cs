@@ -5,13 +5,12 @@ namespace PAMS.environment
 {
     static internal class DB
     {
-        private static readonly string ServerName = "AliQassim";
-        private static readonly string DatabaseName = "PAMS";
+        private static readonly string ServerName = AppConfig.ServerName;
+        private static readonly string DatabaseName = AppConfig.DatabaseName;
 
         public static readonly string ConnectionString =
             $@"Data Source={ServerName};Initial Catalog={DatabaseName};Integrated Security=True;TrustServerCertificate=True";
 
-        
         private static SqlConnection GetConnection()
         {
             return new SqlConnection(ConnectionString);
@@ -35,7 +34,7 @@ namespace PAMS.environment
         }
 
      
-        public static DataTable LoadData(string query)
+        public static DataTable? LoadData(string query)
         {
             try
             {

@@ -49,15 +49,12 @@ namespace PAMS.Models
                 query = @$"
                     DECLARE @fromdate DATE = '{fromdate}';
                     DECLARE @todate DATE = '{todate}';
-                    select name,[Totle amount] from Beneficiaries as b 
+                    select Name,[Totle amount] from Beneficiaries as b 
 	                    join ProjectTotle(@fromdate,@todate) as t on t.BeneficiaryID=b.id
                 ";
             }
             DataTable data = DB.LoadData(query);
-            if(data.Columns.Contains("name"))
-            {
-                data.Columns["name"].ColumnName = "Name";
-            }
+            
             return data;
             
         }

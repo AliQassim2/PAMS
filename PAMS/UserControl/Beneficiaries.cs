@@ -1,7 +1,7 @@
 ﻿using PAMS.environment;
 using PAMS.Models;
 using System.Data;
-using PAMS.environment;
+using System.Windows.Forms;
 namespace PAMS
 {
     public partial class Beneficiaries : UserControl
@@ -24,10 +24,10 @@ namespace PAMS
         {
             using(AppDbContext context = new AppDbContext())
             {
-                dataGridView1.DataSource = context.Beneficiaries.ToList();
+                gridControl1.DataSource = context.Beneficiaries.ToList();
             }
-            dataGridView1.Columns["id"].Visible = false;
-            dataGridView1.Columns["name"].HeaderText = "اسم الجهة المستفيدة";
+            gridView1.Columns["id"].Visible = false;
+            gridView1.Columns["Name"].Caption = "اسم الجهة المستفيدة";
             if (usertype == "3")
             {
                 button1.Visible = button2.Visible = button3.Visible = false;
@@ -38,35 +38,27 @@ namespace PAMS
         public void LoadDataExec()
         {
             DataTable dt = ExecutorModel.GetAllExecutor();
-            dataGridView1.DataSource = dt;
-            dataGridView1.Columns["id"].Visible = false;
-            dataGridView1.Columns["name"].HeaderText = "اسم الجهة المنفذة";
+            gridControl1.DataSource = dt;
+            gridView1.Columns["id"].Visible = false;
+            gridView1.Columns["Name"].Caption = "اسم الجهة المنفذة";
             if (usertype == "3")
             {
                 button1.Visible = button2.Visible = button3.Visible = false;
             }
         }
 
-        private void textBox1_TextChanged(object sender, EventArgs e)
-        {
-            if (dataGridView1.DataSource != null)
-            {
-                dataGridView1.CurrentCell = null;
-                DataTable dt = (DataTable)dataGridView1.DataSource;
-                dt.DefaultView.RowFilter = string.Format("[name] like '" + textBox1.Text + "%'");
-            }
-        }
+      
 
         private void button3_Click(object sender, EventArgs e)
         {
-            if (dataGridView1.CurrentRow == null)
+            if (gridView1.FocusedRowHandle < 0)
             {
                 MessageBox.Show("لم يتم اختيار العنصر المراد حذفه", "لم يتم اختيار العنصر", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
            
-            string Id = dataGridView1.CurrentRow.Cells["id"].Value.ToString(),
-             Name = dataGridView1.CurrentRow.Cells["name"].Value.ToString();
+            string Id = gridView1.GetRowCellValue(gridView1.FocusedRowHandle, "id")?.ToString(),
+             Name = gridView1.GetRowCellValue(gridView1.FocusedRowHandle, "name")?.ToString();
             DialogResult result = MessageBox.Show($"هل انت متاكد من حذف الجهة   {Name}؟", "تاكيد الحذف", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
             if (result == DialogResult.Yes)
             { 
@@ -116,8 +108,8 @@ namespace PAMS
 
         private void button2_Click(object sender, EventArgs e)
         {
-            string id = dataGridView1.CurrentRow.Cells["id"].Value.ToString();
-            string name = dataGridView1.CurrentRow.Cells["Name"].Value.ToString();
+            string id = gridView1.GetRowCellValue(gridView1.FocusedRowHandle, "id")?.ToString(),
+             name = gridView1.GetRowCellValue(gridView1.FocusedRowHandle, "name")?.ToString();
             if (checkBox1.Checked)
             {
                 List<string> labels = ["اسم الجهة المنفذة"];

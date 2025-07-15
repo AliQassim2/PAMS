@@ -73,12 +73,13 @@ namespace PAMS.Models
             string columns = "[ID]\r\n      ,[Name]\r\n      ,[Username]\r\n      ,[Type]\r\n      ,[UserType]\r\n      ,[Password]\r\n      ,[Created_at]\r\n      ,[who_added]\r\n      ,[WhoAddedType]"
             )
         {
-            return DB.LoadData($"SELECT {columns} FROM infoUsers where ID <> '{currentid}'");
+            return DB.LoadData($"SELECT {columns} FROM infoUsers where ID <> '{currentid}' AND [Username] <> 'admin'");
         }
         public static bool AddUser(string name, string username, string password, string type, string whoAdded)
         {
             string hashedPassword = HashPassword(password, Encoding.UTF8.GetBytes("say my name"));
-            string query = $"exec AddUser '{name}' , '{username}' , {type} , '{hashedPassword}' , '{whoAdded}'";
+            string whoadded = whoAdded == null ?"NULL":$"'{whoAdded}'";
+            string query = $"exec AddUser '{name}' , '{username}' , {type} , '{hashedPassword}' , {whoadded}";
             return DB.Execute(query);
                 
         }

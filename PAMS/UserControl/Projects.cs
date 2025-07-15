@@ -1,4 +1,5 @@
-﻿using PAMS.Models;
+﻿using DevExpress.XtraGrid;
+using PAMS.Models;
 using System.Data;
 
 namespace PAMS
@@ -15,43 +16,53 @@ namespace PAMS
         }
         public void LoadData()
         {
-            dataGridView1.DataSource = ProjectModel.GetAllProjects();
-            dataGridView1.Columns["BeneficiaryID"].Visible =dataGridView1.Columns["add_by"].Visible = dataGridView1.Columns["ID"].Visible = dataGridView1.Columns["Type"].Visible = false;
-            dataGridView1.Columns["Name"].HeaderText = "اسم المشروع";
-            dataGridView1.Columns["TypeName"].HeaderText = "نوع المشروع";
-            dataGridView1.Columns["StartDate"].HeaderText = "تاريخ البدء";
-            dataGridView1.Columns["AllocatedAmount"].HeaderText = "المبلغ المخصص";
-            dataGridView1.Columns["BeneficiarieName"].HeaderText = "اسم الجهة المستفيدة";
-            dataGridView1.Columns["UsernameAdded"].HeaderText = "اسم المستخدم الذي قام بالاضافة";
-            dataGridView1.Columns["CreatedAt"].HeaderText = "تاريخ الاضافة";
-            dataGridView1.Columns["BeneficiarieName"].Width = dataGridView1.Columns["Type"].Width = dataGridView1.Columns["StartDate"].Width = dataGridView1.Columns["AllocatedAmount"].Width = dataGridView1.Columns["UsernameAdded"].Width = dataGridView1.Columns["CreatedAt"].Width = 150;
+            gridControl1.DataSource = ProjectModel.GetAllProjects();
+            gridView1.PopulateColumns(); // Optional: ensures columns are created if not using designer
+
+            // Hide unnecessary columns
+            gridView1.Columns["BeneficiaryID"].Visible = false;
+            gridView1.Columns["add_by"].Visible = false;
+            gridView1.Columns["ID"].Visible = false;
+            gridView1.Columns["Type"].Visible = false;
+
+            // Set headers (captions)
+            gridView1.Columns["Name"].Caption = "اسم المشروع";
+            gridView1.Columns["TypeName"].Caption = "نوع المشروع";
+            gridView1.Columns["StartDate"].Caption = "تاريخ البدء";
+            gridView1.Columns["AllocatedAmount"].Caption = "المبلغ المخصص";
+            gridView1.Columns["BeneficiarieName"].Caption = "اسم الجهة المستفيدة";
+            gridView1.Columns["UsernameAdded"].Caption = "اسم المستخدم الذي قام بالاضافة";
+            gridView1.Columns["CreatedAt"].Caption = "تاريخ الاضافة";
+
+            // Set column widths
+            gridView1.Columns["BeneficiarieName"].Width = 150;
+            gridView1.Columns["StartDate"].Width = 150;
+            gridView1.Columns["AllocatedAmount"].Width = 150;
+            gridView1.Columns["UsernameAdded"].Width = 150;
+            gridView1.Columns["CreatedAt"].Width = 150;
             if (usertype == "3")
             {
                 buttonAdd.Visible = buttonEdit.Visible = buttonDelete.Visible = false;
             }
+            gridView1.Columns["Name"].OptionsFilter.AllowFilter = true;
         }
         public void GetCurrentUser(UserModel user)
         {
             currentUser = user.Id;
             usertype = user.Type;
         }
-        private void textBox1_TextChanged(object sender, EventArgs e)
-        {
-            dataGridView1.CurrentCell = null;
-            DataTable dt = (DataTable)dataGridView1.DataSource;
-            dt.DefaultView.RowFilter = string.Format("[Name] like '" + textBox1.Text + "%'");
-        }
+       
 
         private void button3_Click(object sender, EventArgs e)
         {
-            if (dataGridView1.CurrentRow == null)
+            if (gridView1.FocusedRowHandle < 0)
             {
                 MessageBox.Show("لم يتم اختيار العنصر المراد حذفه", "لم يتم اختيار العنصر", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
 
-            string projectName = dataGridView1.CurrentRow.Cells["Name"].Value.ToString();
-            string projectId = dataGridView1.CurrentRow.Cells["ID"].Value.ToString();
+            string? projectName = gridView1.GetRowCellValue(gridView1.FocusedRowHandle, "Name")?.ToString();
+            string? projectId = gridView1.GetRowCellValue(gridView1.FocusedRowHandle, "ID")?.ToString();
 
 
             DialogResult result = MessageBox.Show($"هل انت متاكد من حذف المشروع {projectName}؟", "تاكيد الحذف", MessageBoxButtons.YesNo, MessageBoxIcon.Question);
@@ -87,7 +98,7 @@ namespace PAMS
         private void buttonEdit_Click(object sender, EventArgs e)
         {
 
-            if (dataGridView1.CurrentRow == null) { 
+            if (gridView1.FocusedRowHandle < 0) { 
                 MessageBox.Show("يرجى اختيار مشروع المراد تعديله","خطا في اختيار",MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
@@ -101,12 +112,12 @@ namespace PAMS
                 MessageBox.Show("لا يوجد جهات مستفيدة مسجلة في النظام", "خطا في البيانات", MessageBoxButtons.OK, MessageBoxIcon.Warning);
                 return;
             }
-            string ID = dataGridView1.CurrentRow.Cells["ID"].Value.ToString(),
-                ProjectName = dataGridView1.CurrentRow.Cells["Name"].Value.ToString(),
-                ProjectType = dataGridView1.CurrentRow.Cells["Type"].Value.ToString(),
-                StartDate = dataGridView1.CurrentRow.Cells["StartDate"].Value.ToString(),
-                Amount= dataGridView1.CurrentRow.Cells["AllocatedAmount"].Value.ToString(),
-                BN = dataGridView1.CurrentRow.Cells["BeneficiaryID"].Value.ToString();
+            string ID = gridView1.GetRowCellValue(gridView1.FocusedRowHandle, "ID")?.ToString(),
+                ProjectName = gridView1.GetRowCellValue(gridView1.FocusedRowHandle, "Name").ToString(),
+                ProjectType = gridView1.GetRowCellValue(gridView1.FocusedRowHandle, "Type") ?.ToString(),
+                StartDate = gridView1.GetRowCellValue(gridView1.FocusedRowHandle, "StartDate")?.ToString(),
+                Amount= gridView1.GetRowCellValue(gridView1.FocusedRowHandle, "AllocatedAmount") ? .ToString(),
+                BN = gridView1.GetRowCellValue(gridView1.FocusedRowHandle, "BeneficiaryID")?.ToString();
 
             List<string> labels = new List<string>() { "اسم المشروع","نوع المشروع","تاريخ البداء","المبلغ المخصص له","الجهة المستفيدة"};
             List<string> values = new List<string>() { ProjectName, ProjectType, StartDate, Amount, BN };

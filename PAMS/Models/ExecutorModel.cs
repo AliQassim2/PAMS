@@ -15,21 +15,21 @@ namespace PAMS.Models
 
         public static DataTable GetAllExecutor()
         {
-               return DB.LoadData("SELECT * FROM [PAMS].[dbo].[Executors]");
+               return DB.LoadData("SELECT * FROM [Executors]");
         }
         public static bool AddExecutor(string name)
         {
-            string query = $"INSERT INTO [PAMS].[dbo].[Executors] (name) VALUES ('{name}')";
+            string query = $"INSERT INTO [Executors] (Name) VALUES ('{name}')";
             return DB.Execute(query);
         }
         public static bool UpdateExecutor(string id, string name)
         {
-            string query = $"UPDATE [PAMS].[dbo].[Executors] SET name = '{name}' WHERE id = '{id}'";
+            string query = $"UPDATE [Executors] SET Name = '{name}' WHERE id = '{id}'";
             return DB.Execute(query);
         }
         public static bool DeleteExecutor(string id)
         {
-            string query = $"DELETE FROM [PAMS].[dbo].[Executors] WHERE id = '{id}'";
+            string query = $"DELETE FROM [Executors] WHERE id = '{id}'";
             return DB.Execute(query);
         }
     }
